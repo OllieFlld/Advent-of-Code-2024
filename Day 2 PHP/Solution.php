@@ -53,9 +53,13 @@ function validateReportWithDampener(array $report): bool
 
 function validateReport(array $report): bool
 {
+    $isIncreasing = areLevelsIncreasing($report);
+    $isDecreasing = areLevelsDecreasing($report);
+    if ($isIncreasing === $isDecreasing) {
+        return false;
+    }
+
     $previousLevel = null;
-    $isIncreasing = false;
-    $isDecreasing = false;
     foreach ($report as $level) {
         if (is_null($previousLevel)) {
             $previousLevel = $level;
@@ -68,13 +72,27 @@ function validateReport(array $report): bool
             return false;
         }
 
-        $isIncreasing = $isIncreasing ?: $level > $previousLevel;
-        $isDecreasing = $isDecreasing ?: $level < $previousLevel;
-
         $previousLevel = $level;
     }
 
     return true;
+}
+
+function areLevelsIncreasing(array $report): bool
+{
+    return sortReport($report) === $report;
+}
+
+function areLevelsDecreasing(array $report): bool
+{
+    return sortReport($report) === array_reverse($report);
+}
+
+function sortReport(array $report): array
+{
+    sort($report, SORT_NUMERIC);
+
+    return $report;
 }
 
 function validateLevel(string $level, string $previousLevel, bool $isIncreasing, bool $isDecreasing): bool
