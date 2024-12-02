@@ -35,20 +35,17 @@ function getInputFromFile(string $fileName): array
 
 function validateReportWithDampener(array $report): bool
 {
-    $validReport = validateReport($report);
-    if ($validReport) {
-        return true;
-    }
+    return array_any(
+        $report,
+        fn ($value, $index) => validateReport(arrayWithoutIndex($report, $index))
+    );
+}
 
-    foreach ($report as $index => $level) {
-        $reportToModify = $report;
-        unset($reportToModify[$index]);
-        if (validateReport(array_values($reportToModify))) {
-            return true;
-        }
-    }
+function arrayWithoutIndex(array $input, int $index): array
+{
+    unset($input[$index]);
 
-    return false;
+    return array_values($input);
 }
 
 function validateReport(array $report): bool
