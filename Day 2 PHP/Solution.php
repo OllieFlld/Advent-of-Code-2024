@@ -1,20 +1,11 @@
 <?php
 $inputFileName = 'input.txt';
 
-if (!file_exists($inputFileName)) {
-    throw new Exception(sprintf('No input file with name: %s', $inputFileName));
-}
-
-$input = file($inputFileName, FILE_IGNORE_NEW_LINES);
-if (empty($input) || !is_array($input)) {
-    throw new Exception(sprintf('Empty input file with name: %s', $inputFileName));
-}
-
-$formattedReports = array_map(fn($report) => explode(' ', $report), $input);
+$reports = getInputFromFile($inputFileName);
 
 $validReports = [];
 $validReportsWithDampener = [];
-foreach ($formattedReports as $report) {
+foreach ($reports as $report) {
     if (validateReport($report)) {
         $validReports[] = $report;
     }
@@ -28,6 +19,20 @@ echo sprintf('Valid Reports (Part 1): %s', count($validReports));
 echo PHP_EOL;
 echo sprintf('Valid Reports with Dampener (Part 2): %s', count($validReportsWithDampener));
 
+function getInputFromFile(string $fileName): array
+{
+    if (!file_exists($fileName)) {
+        throw new Exception(sprintf('No input file with name: %s', $fileName));
+    }
+
+    $input = file($fileName, FILE_IGNORE_NEW_LINES);
+    if (empty($input) || !is_array($input)) {
+        throw new Exception(sprintf('Empty input file with name: %s', $fileName));
+    }
+
+    return array_map(fn(string $report) => explode(' ', $report), $input);
+}
+
 function validateReportWithDampener(array $report): bool
 {
     $validReport = validateReport($report);
@@ -35,7 +40,7 @@ function validateReportWithDampener(array $report): bool
         return true;
     }
 
-    for ($index = 0; $index < (count($report)); $index++) {
+    foreach ($report as $index => $level) {
         $reportToModify = $report;
         unset($reportToModify[$index]);
         if (validateReport(array_values($reportToModify))) {
@@ -63,13 +68,8 @@ function validateReport(array $report): bool
             return false;
         }
 
-        if ($level > $previousLevel) {
-            $isIncreasing = true;
-        }
-
-        if ($level < $previousLevel) {
-            $isDecreasing = true;
-        }
+        $isIncreasing = $isIncreasing ?: $level > $previousLevel;
+        $isDecreasing = $isDecreasing ?: $level < $previousLevel;
 
         $previousLevel = $level;
     }
