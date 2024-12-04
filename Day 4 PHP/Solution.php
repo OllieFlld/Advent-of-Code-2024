@@ -6,11 +6,11 @@ $part1Counter = 0;
 $part2Counter = 0;
 foreach ($input as $index => $line) {
     foreach (array_keys($line, 'X') as $xLine) {
-        $part1Counter += countValidValues(getAllDirections($input, $xLine, $index, 4), ['X', 'M', 'A', 'S']);
+        $part1Counter += countValidValues(getAllDirections($input, $xLine, $index, 4), 'XMAS');
     }
 
     foreach (array_keys($line, 'A') as $aLine) {
-        $validValues = countValidValues(getPart2Directions($input, $aLine, $index), ['M', 'A', 'S'], ['S', 'A', 'M']);
+        $validValues = countValidValues(getPart2Directions($input, $aLine, $index), 'MAS', 'SAM');
         if ($validValues === 2) {
             $part2Counter++;
         }
@@ -37,7 +37,7 @@ function getAllDirections(array $input, int $xAxis, int $yAxis, int $distance): 
 
     }
 
-   return $output;
+    return array_map('implode', $output);
 }
 
 function getPart2Directions(array $input, int $xAxis, int $yAxis): array
@@ -48,10 +48,10 @@ function getPart2Directions(array $input, int $xAxis, int $yAxis): array
         $output['forward'][$delta] = getValueAtIndex($input, $xAxis + $delta, $yAxis - $delta);
     }
 
-    return $output;
+    return array_map('implode', $output);
 }
 
-function countValidValues(array $output, array ...$validValues): int
+function countValidValues(array $output, string ...$validValues): int
 {
     $validCounter = 0;
     foreach ($output as $word) {
