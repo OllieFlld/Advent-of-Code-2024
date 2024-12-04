@@ -21,10 +21,10 @@ echo sprintf('XMAS Appearance Count (Part 1): %s', $part1Counter);
 echo PHP_EOL;
 echo sprintf('X-MAS Appearance Count (Part 2): %s', $part2Counter);
 
-function getAllDirections(array $input, int $xAxis, int $yAxis, int $distance): array
+function getAllDirections(array $input, int $xAxis, int $yAxis, int $length): array
 {
     $output = [];
-    foreach (range( 0, $distance - 1) as $delta) {
+    foreach (range( 0, $length - 1) as $delta) {
         $output['up'][$delta] = getValueAtIndex($input, $xAxis, $yAxis + $delta);
         $output['down'][$delta] = getValueAtIndex($input, $xAxis, $yAxis - $delta);
         $output['left'][$delta] = getValueAtIndex($input, $xAxis - $delta, $yAxis);
@@ -68,7 +68,7 @@ function countValidValues(array $output, string ...$validValues): int
     return $validCounter;
 }
 
-function getValueAtIndex(array $input, int $xAxis, int $yAxis ): ?string
+function getValueAtIndex(array $input, int $xAxis, int $yAxis): ?string
 {
     return $input[$yAxis][$xAxis] ?? null;
 }
