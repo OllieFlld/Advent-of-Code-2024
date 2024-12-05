@@ -30,10 +30,6 @@ function getRulesForSorting(array $rules): array
 
     $sortedValues = [];
     foreach ($allValues as $value) {
-        $sortedValues[$value] = [
-            'before' => [],
-            'after' => []
-        ];
         foreach ($rules as $rule) {
             if ($rule[0] === $value) {
                 $sortedValues[$value]['before'][] = $rule[1];
@@ -52,11 +48,11 @@ function sortLine(array $line, array $sortingRules): array
 {
     usort($line, function ($a, $b) use ($sortingRules) {
         $linesRules = $sortingRules[$a];
-        if (in_array($b, $linesRules['before'])) {
+        if (in_array($b, $linesRules['before'] ?? [])) {
             return -1;
         }
 
-        if (in_array($b, $linesRules['after'])) {
+        if (in_array($b, $linesRules['after'] ?? [])) {
             return 1;
         }
 
